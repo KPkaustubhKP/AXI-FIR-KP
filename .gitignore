@@ -1,0 +1,30 @@
+# Vivado project artifacts
+*.jou
+*.log
+*.str
+.Xil/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.srcs/*.xml
+vivado_pid*.debug
+webtalk*.log
+usage_statistics_webtalk.html
+*.dcp
+*.bit
+*.ltx
+*.bin
+*.mcs
+
+# Simulation build artifacts
+sim/build/
+*.vvp
+*.vcd
+*.wdb
+
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
