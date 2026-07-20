@@ -27,6 +27,27 @@ always_ff @(posedge clk) begin
     end
 end
 
+logic signed [INPUT_WIDTH-1:0] sample [TAPS-1:0];
+
+
+always_ff @(posedge clk) begin
+    if (!reset) begin
+        for (int i = 0; i < TAPS; i++) begin
+            sample[i] <= 0;
+        end
+    end
+    else if (en) begin
+        sample[0] <= data_in;
+        for (int i = 1; i < TAPS; i++) begin
+            sample[i] <= sample[i-1];
+        end
+    end
+end
+
+
+
+
+
 
 
 endmodule
