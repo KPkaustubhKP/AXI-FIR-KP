@@ -44,7 +44,18 @@ always_ff @(posedge clk) begin
     end
 end
 
-
+MAC #(
+    .INPUT_WIDTH(INPUT_WIDTH),
+    .COEFF_WIDTH(COEFF_WIDTH),
+    .ACC_WIDTH(ACC_WIDTH)
+) mac (
+    .clk(clk),
+    .reset(reset),
+    .en(en),
+    .a(data_in),
+    .b(coeff_mem),
+    .sum_out(data_out)
+);
 
 
 
