@@ -1,33 +1,33 @@
-`timescale 1ns / 1ps
+`timescale 1ns/1ps
 
 module tb_MAC;
 
-    localparam int N = 32;
-    localparam int INPUT_A_WIDTH = 16;
-    localparam int INPUT_B_WIDTH = 16;
-    localparam int PRODUCT_WIDTH = INPUT_A_WIDTH + INPUT_B_WIDTH;
-    localparam int ACC_WIDTH = PRODUCT_WIDTH + $clog2(N);
-    localparam int STAGES = $clog2(N);
-    localparam int LATENCY = STAGES + 2;  // product reg + stage0 seed reg + tree stages
+    localparam int N              = 32;
+    localparam int INPUT_A_WIDTH  = 16;
+    localparam int INPUT_B_WIDTH  = 16;
+    localparam int PRODUCT_WIDTH  = INPUT_A_WIDTH + INPUT_B_WIDTH;
+    localparam int ACC_WIDTH      = PRODUCT_WIDTH + $clog2(N);
+    localparam int STAGES         = $clog2(N);
+    localparam int LATENCY        = STAGES + 2; // product reg + stage0 seed reg + tree stages
 
-    logic                            clk;
-    logic                            reset;  // active-low, per MAC's current convention
-    logic                            en;
-    logic signed [INPUT_A_WIDTH-1:0] a                                                  [N];
-    logic signed [INPUT_B_WIDTH-1:0] b                                                  [N];
-    logic signed [    ACC_WIDTH-1:0] sum_out;
+    logic clk;
+    logic reset;   // active-low, per MAC's current convention
+    logic en;
+    logic signed [INPUT_A_WIDTH-1:0] a [N];
+    logic signed [INPUT_B_WIDTH-1:0] b [N];
+    logic signed [ACC_WIDTH-1:0]     sum_out;
 
     MAC #(
         .N(N),
         .INPUT_A_WIDTH(INPUT_A_WIDTH),
         .INPUT_B_WIDTH(INPUT_B_WIDTH)
     ) dut (
-        .clk    (clk),
-        .reset  (reset),
-        .en     (en),
-        .a      (a),
-        .b      (b),
-        .sum_out(sum_out)
+        .clk     (clk),
+        .reset   (reset),
+        .en      (en),
+        .a       (a),
+        .b       (b),
+        .sum_out (sum_out)
     );
 
     // ---------------- Clock ----------------
@@ -35,9 +35,9 @@ module tb_MAC;
     always #5 clk = ~clk;
 
     // ---------------- Scoreboard ----------------
-    longint expected_q      [$];
-    int     pass_count = 0;
-    int     fail_count = 0;
+    longint expected_q[$];
+    int     pass_count  = 0;
+    int     fail_count  = 0;
     int     cycle_count = 0;
 
     // Push the expected result whenever the pipeline is actually advancing.
@@ -75,7 +75,7 @@ module tb_MAC;
 
     // ---------------- Stimulus helpers ----------------
     task automatic drive_all(input logic signed [INPUT_A_WIDTH-1:0] a_val,
-                             input logic signed [INPUT_B_WIDTH-1:0] b_val);
+                              input logic signed [INPUT_B_WIDTH-1:0] b_val);
         for (int i = 0; i < N; i++) begin
             a[i] <= a_val;
             b[i] <= b_val;
@@ -92,10 +92,10 @@ module tb_MAC;
     // ---------------- Main sequence ----------------
     initial begin
         en    = 0;
-        reset = 0;  // assert reset (active-low)
+        reset = 0;              // assert reset (active-low)
         drive_all(0, 0);
         repeat (3) @(posedge clk);
-        reset = 1;  // release reset
+        reset = 1;              // release reset
         @(posedge clk);
 
         en = 1;

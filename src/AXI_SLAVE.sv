@@ -4,25 +4,24 @@ module AXI_SLAVE #(
     input logic clk,
     input logic rst,
 
-    input logic [INPUT_WIDTH -1:0]TDATA,
+    input logic [INPUT_WIDTH -1:0] TDATA,
     input logic TVALID,
     output logic TREADY
 );
-assign TREADY = 1'b1;
-logic [INPUT_WIDTH -1:0] TDATA_reg;
+    assign TREADY = 1'b1;
+    logic [INPUT_WIDTH -1:0] TDATA_reg;
 
 
-always @(posedge clk) begin
+    always @(posedge clk) begin
 
 
-    if(!rst) begin
-        TDATA_reg <= 0;
-    end
-    else begin
-        if(TVALID && TREADY) begin
-             TDATA_reg <= TDATA;
+        if (!rst) begin
+            TDATA_reg <= 0;
+        end else begin
+            if (TVALID && TREADY) begin
+                TDATA_reg <= TDATA;
+            end
         end
     end
-end
 
 endmodule

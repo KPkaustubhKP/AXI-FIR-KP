@@ -1,23 +1,23 @@
-`timescale 1ns / 1ps
+`timescale 1ns/1ps
 
 module tb_FIR;
 
-    localparam int TAPS = 32;
+    localparam int TAPS        = 32;
     localparam int INPUT_WIDTH = 16;
     localparam int COEFF_WIDTH = 16;
-    localparam int ACC_WIDTH = INPUT_WIDTH + COEFF_WIDTH + $clog2(TAPS);
-    localparam int FIR_LATENCY = 1 + 2 + $clog2(TAPS);  // shift-reg latch + MAC latency
+    localparam int ACC_WIDTH   = INPUT_WIDTH + COEFF_WIDTH + $clog2(TAPS);
+    localparam int FIR_LATENCY = 1 + 2 + $clog2(TAPS); // shift-reg latch + MAC latency
 
-    logic                           clk;
-    logic                           reset;  // active-low
-    logic                           en;
-    logic                           coeff_mem_reset;  // active-low
-    logic signed [ INPUT_WIDTH-1:0] data_in;
-    logic signed [ COEFF_WIDTH-1:0] coeff_wr_data;
-    logic        [$clog2(TAPS)-1:0] coeff_addr_ext;
-    logic                           coeff_wr_en;
-    logic signed [   ACC_WIDTH-1:0] data_out;
-    logic                           data_out_valid;
+    logic clk;
+    logic reset;            // active-low
+    logic en;
+    logic coeff_mem_reset;  // active-low
+    logic signed [INPUT_WIDTH-1:0] data_in;
+    logic signed [COEFF_WIDTH-1:0] coeff_wr_data;
+    logic [$clog2(TAPS)-1:0]        coeff_addr_ext;
+    logic                          coeff_wr_en;
+    logic signed [ACC_WIDTH-1:0]   data_out;
+    logic                          data_out_valid;
 
     FIR #(
         .TAPS(TAPS),
@@ -47,11 +47,11 @@ module tb_FIR;
     // to simulator-specific scheduling of same-edge always blocks -
     // there is nothing left that can race, since we compare the DUT
     // against itself.
-    longint expected_q     [$];
-    int     pass_count = 0;
-    int     fail_count = 0;
-    int     push_count = 0;
-    int     pop_count = 0;
+    longint expected_q[$];
+    int     pass_count  = 0;
+    int     fail_count  = 0;
+    int     push_count  = 0;
+    int     pop_count   = 0;
 
     always @(posedge clk) begin
         if (reset && en) begin
@@ -66,12 +66,12 @@ module tb_FIR;
     end
 
     // Fixed: Added `#1` delay after clock edge to let NBA outputs settle before evaluation in Vivado
-    always @(posedge clk) begin
+ always @(posedge clk) begin
         #1;
         if (data_out_valid) begin
             if (expected_q.size() > 0) begin
                 longint expected;
-                expected = expected_q.pop_front();  // blocking - visible immediately
+                expected = expected_q.pop_front();   // blocking - visible immediately
                 pop_count++;
                 if (data_out !== expected) begin
                     $display("[%0t] FAIL: expected=%0d got=%0d", $time, expected, data_out);
@@ -111,12 +111,12 @@ module tb_FIR;
 
     // ---------------- Waveform dump: Tool-specific macro handling ----------------
     initial begin
-        $dumpfile("tb_FIR.vcd");  // dump into the current run dir, no missing subfolder
+        $dumpfile("tb_FIR.vcd");   // dump into the current run dir, no missing subfolder
         $dumpvars(0, tb_FIR);
     end
 
     // ---------------- Main sequence ----------------
-    initial begin
+initial begin
         en              <= 0;
         reset           <= 0;
         coeff_mem_reset <= 0;
@@ -125,36 +125,35 @@ module tb_FIR;
         coeff_addr_ext  <= 0;
         coeff_wr_data   <= 0;
         repeat (3) @(posedge clk);
-
+    
         reset           <= 1;
         coeff_mem_reset <= 1;
         @(posedge clk);
-
+    
         load_coeffs_sequential();
-
+    
         en      <= 1;
         data_in <= 1;
         @(posedge clk);
         data_in <= 0;
         repeat (TAPS + FIR_LATENCY + 5) @(posedge clk);
-
+    
         en <= 0;
         @(posedge clk);
         load_coeffs_random();
-
+    
         en <= 1;
         repeat (200) begin
             data_in <= $urandom_range(0, 200) - 100;
             @(posedge clk);
         end
-
+    
         en <= 0;
         repeat (FIR_LATENCY + 5) @(posedge clk);
 
         $display("---------------------------------------------");
         $display("FIR_LATENCY (reference) = %0d cycles", FIR_LATENCY);
-        $display("Pushed: %0d   Popped: %0d   Outstanding: %0d", push_count, pop_count,
-                 expected_q.size());
+        $display("Pushed: %0d   Popped: %0d   Outstanding: %0d", push_count, pop_count, expected_q.size());
         $display("TEST COMPLETE: %0d passed, %0d failed", pass_count, fail_count);
         $display("---------------------------------------------");
         $finish;
