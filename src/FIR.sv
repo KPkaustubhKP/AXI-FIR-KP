@@ -58,27 +58,26 @@ MAC #(
 );
 
 
+localparam FIR_LATENCY = 2 + $clog2(TAPS);
 
-localparam MAC_LATENCY = 2 + $clog2(TAPS);   // to account for MAC latency (7 clock cycles)
 
-logic valid_pipe [MAC_LATENCY-1:0];
+logic valid_pipe [FIR_LATENCY-1:0];
 
 always_ff @(posedge clk) begin
     if (!reset) begin
-        for (int i = 0; i < MAC_LATENCY; i++) begin
+        for (int i = 0; i < FIR_LATENCY; i++) begin
             valid_pipe[i] <= 0;
         end
     end
     else if (en) begin
         valid_pipe[0] <= 1;
-        for (int i = 1; i < MAC_LATENCY; i++) begin
+        for (int i = 1; i < FIR_LATENCY; i++) begin
             valid_pipe[i] <= valid_pipe[i-1];
         end
     end
 end
 
-assign data_out_valid = valid_pipe[MAC_LATENCY-1]&&en;  //to inform the output is valid
-
+assign data_out_valid = valid_pipe[FIR_LATENCY-1] && en;
 
 
 

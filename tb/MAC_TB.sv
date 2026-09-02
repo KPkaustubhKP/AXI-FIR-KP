@@ -46,7 +46,7 @@ module tb_MAC;
     always @(posedge clk) begin
         if (reset && en) begin
             longint acc;
-            acc = 0;
+            acc <= 0;
             for (int i = 0; i < N; i++) begin
                 acc += longint'(a[i]) * longint'(b[i]);
             end
@@ -77,15 +77,15 @@ module tb_MAC;
     task automatic drive_all(input logic signed [INPUT_A_WIDTH-1:0] a_val,
                               input logic signed [INPUT_B_WIDTH-1:0] b_val);
         for (int i = 0; i < N; i++) begin
-            a[i] = a_val;
-            b[i] = b_val;
+            a[i] <= a_val;
+            b[i] <= b_val;
         end
     endtask
 
     task automatic drive_random();
         for (int i = 0; i < N; i++) begin
-            a[i] = $urandom_range(0, (1 << INPUT_A_WIDTH) - 1);
-            b[i] = $urandom_range(0, (1 << INPUT_B_WIDTH) - 1);
+            a[i] <= $urandom_range(0, (1 << INPUT_A_WIDTH) - 1);
+            b[i] <= $urandom_range(0, (1 << INPUT_B_WIDTH) - 1);
         end
     endtask
 
@@ -120,12 +120,12 @@ module tb_MAC;
 
         // Directed: single active tap, rest zero
         drive_all(0, 0);
-        a[0] = 100;
-        b[0] = 100;
+        a[0] <= 100;
+        b[0] <= 100;
         @(posedge clk);
 
         // Randomized cases
-        repeat (50) begin
+        repeat (60) begin
             drive_random();
             @(posedge clk);
         end
