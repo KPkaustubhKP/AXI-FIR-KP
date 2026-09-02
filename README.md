@@ -21,7 +21,7 @@ AXI4-Stream (data) ────┘
 |---|---|---|---|
 | `MAC.sv` | `src/MAC.sv` | Single multiply-accumulate unit, pipelined | ✅ Verified (unit-level, `MAC_TB.sv`) |
 | `FIR.sv` | `src/FIR.sv` | Top-level 32-tap FIR, instantiates 32x MAC | ✅ Verified (`FIR_tb.sv`) |
-| `AXI_Lite.sv` | `src/AXI_Lite.sv` | AXI4-Lite control register interface | 🔧   **next Last-scope task** |
+| `AXI_Lite.sv` | `src/AXI_Lite.sv` | AXI4-Lite control register interface | 🔧   **Last in-scope task** |
 | `AXI_Stream.sv` | `src/AXI_Stream.sv`| Streaming data in/out with backpressure (TVALID/TREADY) | 🔧   **next in-scope task** |
 
 **Design parameters:**
